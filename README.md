@@ -24,8 +24,8 @@ Idée: faire un jeu type "la brute"
 
  ## Concept
 
-processCommand:
-* Commande -> Event(s)
-applyEvent:
-* Aggregat -> Event -> Aggregat
+- processCommand:
+    - Commande -> Event(s)
+- applyEvent:
+    - Aggregat -> Event -> Aggregat
 
