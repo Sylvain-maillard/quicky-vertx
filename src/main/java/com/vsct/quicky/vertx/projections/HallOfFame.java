@@ -1,5 +1,6 @@
 package com.vsct.quicky.vertx.projections;
 
+import com.vsct.quicky.vertx.Main;
 import com.vsct.quicky.vertx.events.BruteJoined;
 import com.vsct.quicky.vertx.events.BruteLooseFight;
 import com.vsct.quicky.vertx.events.BruteQuit;
@@ -8,40 +9,21 @@ import com.vsct.quicky.vertx.eventstore.BruteEvent;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.center;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Sylvain on 29/05/2016.
  */
 public class HallOfFame extends AbstractVerticle {
 
-    private static class BruteRow implements Comparable {
-        final int xp;
-        final int fightCount;
-
-        private BruteRow(int xp, int fightCount) {
-            this.xp = xp;
-            this.fightCount = fightCount;
-        }
-        BruteRow notifyWin() {
-            return new BruteRow(xp+2, fightCount+1);
-        }
-        BruteRow notifyLoose() {
-            return new BruteRow(xp+1, fightCount+1);
-        }
-
-        @Override
-        public String toString() {
-            return "| " + xp + "|" + fightCount + "|";
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            return ((BruteRow)o).xp - xp;
-        }
-    }
+    private static final Logger LOGGER = getLogger(HallOfFame.class);
 
     private Map<String, BruteRow> hallOfFame = new HashMap<>();
 
@@ -60,7 +42,7 @@ public class HallOfFame extends AbstractVerticle {
 
     private void updateHallOfFameForLooser(Message<String> tMessage) {
         BruteLooseFight event = Json.decodeValue(tMessage.body(), BruteLooseFight.class);
-        hallOfFame.compute(event.getId(), (s, row) ->  row.notifyLoose());
+        hallOfFame.compute(event.getId(), (s, row) -> row.notifyLoose());
     }
 
     private void updateHallOfFameForWinner(Message<String> tMessage) {
@@ -70,14 +52,43 @@ public class HallOfFame extends AbstractVerticle {
 
     private void initBrute(Message<String> tMessage) {
         BruteEvent event = Json.decodeValue(tMessage.body(), BruteEvent.class);
-        hallOfFame.put(event.getId(), new BruteRow(0,0));
+        hallOfFame.put(event.getId(), new BruteRow(0, 0));
     }
 
     public void displayHallOfFame() {
-        System.out.println("------- Hall of Fame ----------");
-        hallOfFame.entrySet().stream().sorted((o1, o2) -> o1.getValue().compareTo(o2.getValue())).forEach(stringIntegerEntry -> {
-            System.out.println("| " + stringIntegerEntry.getKey() + stringIntegerEntry.getValue()
-            );
-        });
+        StringBuilder sb = new StringBuilder("\n------- Hall of Fame ----------\n");
+        hallOfFame.entrySet()
+                .stream()
+                .sorted((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
+                .forEach(entry -> sb.append("| ").append(center(entry.getKey(), 10)).append(entry.getValue()).append("\n"));
+        LOGGER.info(sb.toString());
+    }
+
+    private static class BruteRow implements Comparable {
+        final int xp;
+        final int fightCount;
+
+        private BruteRow(int xp, int fightCount) {
+            this.xp = xp;
+            this.fightCount = fightCount;
+        }
+
+        BruteRow notifyWin() {
+            return new BruteRow(xp + 2, fightCount + 1);
+        }
+
+        BruteRow notifyLoose() {
+            return new BruteRow(xp + 1, fightCount + 1);
+        }
+
+        @Override
+        public String toString() {
+            return "| " + center(""+xp,5) + "|" + center(""+fightCount,5) + "|";
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            return ((BruteRow) o).xp - xp;
+        }
     }
 }

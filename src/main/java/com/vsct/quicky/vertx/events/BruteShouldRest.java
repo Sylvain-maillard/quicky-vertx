@@ -5,20 +5,15 @@ import com.vsct.quicky.vertx.aggregate.Brute;
 import com.vsct.quicky.vertx.eventstore.BruteEvent;
 
 /**
- * Created by Sylvain on 29/05/2016.
+ * Created by Sylvain on 30/05/2016.
  */
-public class BruteJoined extends BruteEvent {
-    public BruteJoined(@JsonProperty("id") String id) {
+public class BruteShouldRest extends BruteEvent {
+    public BruteShouldRest(@JsonProperty("id") String id) {
         super(id);
     }
 
     @Override
     public void apply(Brute brute) {
-        brute.setXp(0);
-        brute.setFightCount(0);
-        brute.setId(getId());
-        brute.setHasJoined(true);
+
     }
-
-
 }

@@ -1,25 +1,26 @@
 package com.vsct.quicky.vertx;
 
 
-import com.vsct.quicky.vertx.aggregate.Arena;
 import com.vsct.quicky.vertx.aggregate.Brute;
 import com.vsct.quicky.vertx.commands.JoinArena;
 import com.vsct.quicky.vertx.commands.QuitArena;
-import com.vsct.quicky.vertx.eventstore.BruteEvent;
+import com.vsct.quicky.vertx.eventhandler.Arena;
+import com.vsct.quicky.vertx.eventhandler.ArenaEmptyEvent;
 import com.vsct.quicky.vertx.eventstore.BruteEventStore;
 import com.vsct.quicky.vertx.projections.HallOfFame;
-import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.eventbus.MessageCodec;
+import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Sylvain on 26/05/2016.
  */
 public class Main {
+
+    private static final Logger LOGGER = getLogger(Main.class);
 
     public static Vertx vertx = Vertx.vertx();
 
@@ -31,17 +32,16 @@ public class Main {
         HallOfFame hallOfFame = new HallOfFame();
         vertx.deployVerticle(hallOfFame);
 
+//
+
         // creer une nouvelle brute:
-        Brute brute = new Brute().setId("brute1");
+        Brute brute = new Brute().setId("Axel");
         brute.processCommand(new JoinArena());
         // creer une nouvelle brute:
-        Brute brute2 = new Brute().setId("brute2");
+        Brute brute2 = new Brute().setId("Sylvain");
         brute2.processCommand(new JoinArena());
 
         /// display all brutes status
-        vertx.setTimer(1000,  h-> {
-            bruteEventStore.displayAllBrutes();
-        });
 
         System.in.read();
 
@@ -54,11 +54,12 @@ public class Main {
         Brute brute4 = new Brute().setId("brute4");
         brute4.processCommand(new JoinArena());
         for (int i = 5; i < 10; i++) {
-            new Brute().setId("brute"+i).processCommand(new JoinArena());
+            new Brute().setId("brute" + i).processCommand(new JoinArena());
         }
 
-        vertx.setTimer(1000,  h-> {
+        vertx.setTimer(1000, h -> {
             hallOfFame.displayHallOfFame();
+            bruteEventStore.displayAllEventByTime();
         });
     }
 }

@@ -14,5 +14,6 @@ public class BruteQuit extends BruteEvent {
 
     @Override
     public void apply(Brute brute) {
+        brute.setHasJoined(false);
     }
 }

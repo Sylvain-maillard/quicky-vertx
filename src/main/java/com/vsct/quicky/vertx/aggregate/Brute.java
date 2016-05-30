@@ -4,9 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.vsct.quicky.vertx.Main;
 import com.vsct.quicky.vertx.eventstore.BruteCommand;
 import com.vsct.quicky.vertx.eventstore.BruteEvent;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 
 import java.util.List;
 
@@ -18,16 +16,10 @@ public class Brute {
     private String id;
     private int xp;
     private int fightCount;
+    private boolean hasJoined;
+    private boolean isFighting;
 
-    public Brute(){}
-
-    public void applyEvents(List<BruteEvent> events) {
-        events.forEach(event -> event.apply(this));
-    }
-
-    public void processCommand(BruteCommand command) {
-        List<BruteEvent> events = command.execute(id);
-        events.forEach(event -> Main.vertx.eventBus().send("events", Json.encodePrettily(event)));
+    public Brute() {
     }
 
     public static Brute fromStore(String id) {
@@ -35,6 +27,24 @@ public class Brute {
         List<BruteEvent> pastEvents = Main.bruteEventStore.getPastEvents(id);
         brute.applyEvents(pastEvents);
         return brute;
+    }
+
+    public Brute setFighting(boolean fighting) {
+        isFighting = fighting;
+        return this;
+    }
+
+    public Brute setHasJoined(boolean hasJoined) {
+        this.hasJoined = hasJoined;
+        return this;
+    }
+
+    public void applyEvents(List<BruteEvent> events) {
+        events.forEach(event -> event.apply(this));
+    }
+
+    public void processCommand(BruteCommand command) {
+        command.execute(this, events -> events.forEach(event -> Main.vertx.eventBus().send("events", Json.encodePrettily(event))));
     }
 
     public void incFightCount() {
@@ -50,11 +60,6 @@ public class Brute {
         this.xp += inc;
     }
 
-    public Brute setId(String id) {
-        this.id = id;
-        return this;
-    }
-
     public boolean sameXp(Brute currentBrute) {
         return this.xp == currentBrute.xp;
     }
@@ -63,8 +68,17 @@ public class Brute {
         return id;
     }
 
+    public Brute setId(String id) {
+        this.id = id;
+        return this;
+    }
+
     public int getFightCount() {
         return fightCount;
+    }
+
+    public void setFightCount(int fightCount) {
+        this.fightCount = fightCount;
     }
 
     @Override
@@ -73,10 +87,8 @@ public class Brute {
                 .add("id", id)
                 .add("xp", xp)
                 .add("fightCount", fightCount)
+                .add("hasJoined", hasJoined)
+                .add("isFighting", isFighting)
                 .toString();
-    }
-
-    public void setFightCount(int fightCount) {
-        this.fightCount = fightCount;
     }
 }

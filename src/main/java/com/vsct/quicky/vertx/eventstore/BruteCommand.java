@@ -1,5 +1,8 @@
 package com.vsct.quicky.vertx.eventstore;
 
+import com.vsct.quicky.vertx.aggregate.Brute;
+import io.vertx.core.Handler;
+
 import java.util.List;
 
 /**
@@ -7,5 +10,5 @@ import java.util.List;
  */
 public abstract class BruteCommand {
 
-    public abstract List<BruteEvent> execute(String id);
+    public abstract void execute(Brute brute, Handler<List<BruteEvent>> handler);
 }
