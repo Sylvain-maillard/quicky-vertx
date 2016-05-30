@@ -32,8 +32,6 @@ public class Main {
         HallOfFame hallOfFame = new HallOfFame();
         vertx.deployVerticle(hallOfFame);
 
-//
-
         // creer une nouvelle brute:
         Brute brute = new Brute().setId("Axel");
         brute.processCommand(new JoinArena());
