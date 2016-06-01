@@ -23,7 +23,7 @@ public class Arena extends AbstractVerticle {
 
     private List<Brute> readyToFightBrute = new LinkedList<>();
 
-    private final AtomicInteger fightCount = new AtomicInteger(0);
+    private int fightCount;
 
     @Override
     public void start() throws Exception {
@@ -36,14 +36,14 @@ public class Arena extends AbstractVerticle {
     }
 
     private void afterFight(Message<String> tMessage) {
-        if (fightCount.decrementAndGet() == 0) {
+        if (fightCount-- == 0) {
           vertx.eventBus().send(ArenaEmptyEvent.class.getName(),"");
         }
         selectNextFight(tMessage);
     }
 
     private void startFight(Message<String> handler) {
-        fightCount.incrementAndGet();
+        fightCount++;
         OpponentFound event = Json.decodeValue(handler.body(), OpponentFound.class);
         vertx.eventBus().send("applyEvents", event.getId(), (AsyncResult<Message<String>> bruteRebuilt) -> {
             if (bruteRebuilt.succeeded()) {

@@ -24,11 +24,9 @@ public class Main {
 
     public static Vertx vertx = Vertx.vertx();
 
-    public static BruteEventStore bruteEventStore = new BruteEventStore();
-
     public static void main(String[] args) throws IOException {
         vertx.deployVerticle(Arena.class.getName());
-        vertx.deployVerticle(bruteEventStore);
+        vertx.deployVerticle(BruteEventStore.class.getName());
         HallOfFame hallOfFame = new HallOfFame();
         vertx.deployVerticle(hallOfFame);
 

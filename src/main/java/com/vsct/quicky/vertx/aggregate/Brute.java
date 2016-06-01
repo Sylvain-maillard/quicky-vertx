@@ -18,17 +18,33 @@ public class Brute {
     private int fightCount;
     private boolean hasJoined;
     private boolean isFighting;
-
     public Brute() {
     }
 
-    public Brute setFighting(boolean fighting) {
-        isFighting = fighting;
+    public int getXp() {
+        return xp;
+    }
+
+    public Brute setXp(int xp) {
+        this.xp = xp;
         return this;
+    }
+
+    public boolean isHasJoined() {
+        return hasJoined;
     }
 
     public Brute setHasJoined(boolean hasJoined) {
         this.hasJoined = hasJoined;
+        return this;
+    }
+
+    public boolean isFighting() {
+        return isFighting;
+    }
+
+    public Brute setFighting(boolean fighting) {
+        isFighting = fighting;
         return this;
     }
 
@@ -42,11 +58,6 @@ public class Brute {
 
     public void incFightCount() {
         this.fightCount++;
-    }
-
-    public Brute setXp(int xp) {
-        this.xp = xp;
-        return this;
     }
 
     public void incXp(int inc) {

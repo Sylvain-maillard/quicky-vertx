@@ -25,20 +25,20 @@ public class BruteEventStore extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-
-        vertx.eventBus().consumer("events", (Message<String> handler) -> {
-            BruteEvent event = Json.decodeValue(handler.body(), BruteEvent.class);
-            String id = event.getId();
-            // get event for brute:
-            List<BruteEvent> events = store.getOrDefault(id, new ArrayList<>());
-            events.add(event);
-            store.put(id, events);
-            // publish event
-            vertx.eventBus().publish(event.getClass().getName(), handler.body());
-            LOGGER.info("Store event: " + handler.body());
-        });
-
+        vertx.eventBus().consumer("events", this::storeEvent);
         vertx.eventBus().consumer("applyEvents", this::applyEvents);
+    }
+
+    private void storeEvent(Message<String> handler) {
+        BruteEvent event = Json.decodeValue(handler.body(), BruteEvent.class);
+        String id = event.getId();
+        // get event for brute:
+        List<BruteEvent> events = store.getOrDefault(id, new ArrayList<>());
+        events.add(event);
+        store.put(id, events);
+        // publish event
+        vertx.eventBus().publish(event.getClass().getName(), handler.body());
+        LOGGER.info("Store event: " + handler.body());
     }
 
     private void applyEvents(Message<String> tMessage) {
