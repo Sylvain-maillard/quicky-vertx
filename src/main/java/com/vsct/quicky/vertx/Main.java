@@ -51,13 +51,18 @@ public class Main {
         brute3.processCommand(new JoinArena());
         Brute brute4 = new Brute().setId("brute4");
         brute4.processCommand(new JoinArena());
-        for (int i = 5; i < 10; i++) {
-            new Brute().setId("brute" + i).processCommand(new JoinArena());
+        for (int i = 5; i < 1000; i++) {
+            int finalI = i;
+            vertx.runOnContext(h -> {
+                new Brute().setId("brute" + finalI).processCommand(new JoinArena());
+            });
         }
 
-        vertx.setTimer(1000, h -> {
+        System.in.read();
+//
+//        vertx.setTimer(1000, h -> {
             hallOfFame.displayHallOfFame();
-            bruteEventStore.displayAllEventByTime();
-        });
+//            bruteEventStore.displayAllEventByTime();
+//        });
     }
 }

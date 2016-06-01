@@ -38,9 +38,16 @@ public class BruteEventStore extends AbstractVerticle {
             LOGGER.info("Store event: " + handler.body());
         });
 
+        vertx.eventBus().consumer("applyEvents", this::applyEvents);
     }
 
-    public List<BruteEvent> getPastEvents(String bruteId) {
+    private void applyEvents(Message<String> tMessage) {
+        Brute brute = new Brute();
+        brute.applyEvents(getPastEvents(tMessage.body()));
+        tMessage.reply(Json.encode(brute));
+    }
+
+    private List<BruteEvent> getPastEvents(String bruteId) {
         return store.getOrDefault(bruteId, ImmutableList.of());
     }
 
@@ -49,7 +56,7 @@ public class BruteEventStore extends AbstractVerticle {
         store.entrySet().forEach(bruteEvents -> {
             sb.append("id: " + bruteEvents.getKey());
             sb.append("--> events:");
-            bruteEvents.getValue().forEach(System.out::println);
+            bruteEvents.getValue().forEach(sb::append);
             sb.append("--> brute rebuilded from store:");
             Brute brute = new Brute();
             brute.applyEvents(bruteEvents.getValue());
@@ -63,7 +70,7 @@ public class BruteEventStore extends AbstractVerticle {
         store.entrySet().forEach(bruteEvents -> {
             sb.append("id: " + bruteEvents.getKey());
             sb.append("--> events:");
-            bruteEvents.getValue().stream().sorted((o1, o2) -> o1.getTime().compareTo(o2.getTime())).forEach(System.out::println);
+            bruteEvents.getValue().stream().sorted((o1, o2) -> o1.getTime().compareTo(o2.getTime())).forEach(sb::append);
             sb.append("--> brute rebuilded from store:");
             Brute brute = new Brute();
             brute.applyEvents(bruteEvents.getValue());

@@ -22,13 +22,6 @@ public class Brute {
     public Brute() {
     }
 
-    public static Brute fromStore(String id) {
-        Brute brute = new Brute();
-        List<BruteEvent> pastEvents = Main.bruteEventStore.getPastEvents(id);
-        brute.applyEvents(pastEvents);
-        return brute;
-    }
-
     public Brute setFighting(boolean fighting) {
         isFighting = fighting;
         return this;

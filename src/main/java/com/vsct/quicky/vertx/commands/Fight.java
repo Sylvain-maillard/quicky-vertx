@@ -8,14 +8,19 @@ import com.vsct.quicky.vertx.events.BruteWinFight;
 import com.vsct.quicky.vertx.eventstore.BruteCommand;
 import com.vsct.quicky.vertx.eventstore.BruteEvent;
 import io.vertx.core.Handler;
+import org.slf4j.Logger;
 
 import java.security.SecureRandom;
 import java.util.List;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by Sylvain on 30/05/2016.
  */
 public class Fight extends BruteCommand {
+
+    private static final Logger LOGGER = getLogger(Fight.class);
 
     private static final SecureRandom random = new SecureRandom();
 
@@ -27,7 +32,7 @@ public class Fight extends BruteCommand {
 
     @Override
     public void execute(Brute brute, Handler<List<BruteEvent>> handler) {
-        System.out.println(brute.getId() + " will fight against " + opponentId);
+        LOGGER.debug(brute.getId() + " will fight against " + opponentId);
         // file un random: 1 chance sur 2 de gagner
         Main.vertx.setTimer(random.nextInt(500) + 500, h -> {
             if (random.nextBoolean()) {

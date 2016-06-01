@@ -6,6 +6,7 @@ import com.vsct.quicky.vertx.commands.FindOpponent;
 import com.vsct.quicky.vertx.events.*;
 import com.vsct.quicky.vertx.eventstore.BruteEvent;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
 
@@ -44,8 +45,13 @@ public class Arena extends AbstractVerticle {
     private void startFight(Message<String> handler) {
         fightCount.incrementAndGet();
         OpponentFound event = Json.decodeValue(handler.body(), OpponentFound.class);
-        Brute currentBrute = Brute.fromStore(event.getId());
-        currentBrute.processCommand(new Fight(event.getOpponentId()));
+        vertx.eventBus().send("applyEvents", event.getId(), (AsyncResult<Message<String>> bruteRebuilt) -> {
+            if (bruteRebuilt.succeeded()) {
+                String bruteAsJson = bruteRebuilt.result().body();
+                Brute brute = Json.decodeValue(bruteAsJson, Brute.class);
+                brute.processCommand(new Fight(event.getOpponentId()));
+            }
+        });
     }
 
     private void removeBrute(Message<String> tMessage) {
@@ -61,8 +67,13 @@ public class Arena extends AbstractVerticle {
 
     private void selectNextFight(Message<String> handler) {
         BruteEvent event = Json.decodeValue(handler.body(), BruteEvent.class);
-        Brute currentBrute = Brute.fromStore(event.getId());
-        currentBrute.processCommand(new FindOpponent(this));
+        vertx.eventBus().send("applyEvents", event.getId(), (AsyncResult<Message<String>> bruteRebuilt) -> {
+            if (bruteRebuilt.succeeded()) {
+                String bruteAsJson = bruteRebuilt.result().body();
+                Brute brute = Json.decodeValue(bruteAsJson, Brute.class);
+                brute.processCommand(new FindOpponent(this));
+            }
+        });
     }
 
     public Optional<Brute> lockABruteWithSameXpAs(Brute currentBrute) {
