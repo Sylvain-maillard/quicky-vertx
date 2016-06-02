@@ -7,8 +7,8 @@ import com.vsct.quicky.vertx.labrute.eventstore.BruteEvent;
 /**
  * Created by Sylvain on 29/05/2016.
  */
-public class BruteLooseFight extends BruteEvent {
-    public BruteLooseFight(@JsonProperty("id") String id) {
+public class BruteLoseFight extends BruteEvent {
+    public BruteLoseFight(@JsonProperty("id") String id) {
         super(id);
     }
 

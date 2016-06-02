@@ -1,7 +1,7 @@
 package com.vsct.quicky.vertx.labrute.views;
 
 import com.vsct.quicky.vertx.labrute.events.BruteJoined;
-import com.vsct.quicky.vertx.labrute.events.BruteLooseFight;
+import com.vsct.quicky.vertx.labrute.events.BruteLoseFight;
 import com.vsct.quicky.vertx.labrute.events.BruteQuit;
 import com.vsct.quicky.vertx.labrute.events.BruteWinFight;
 import com.vsct.quicky.vertx.labrute.fwk.Event;
@@ -30,7 +30,7 @@ public class HallOfFame extends AbstractVerticle {
         vertx.eventBus().consumer(BruteQuit.class.getName(), this::bruteQuit);
         vertx.eventBus().consumer(BruteJoined.class.getName(), this::bruteJoined);
         vertx.eventBus().consumer(BruteWinFight.class.getName(), this::updateHallOfFameForWinner);
-        vertx.eventBus().consumer(BruteLooseFight.class.getName(), this::updateHallOfFameForLooser);
+        vertx.eventBus().consumer(BruteLoseFight.class.getName(), this::updateHallOfFameForLoser);
         vertx.createHttpServer()
                 .requestHandler(h ->  {
                     LOGGER.info("got query {}", h.uri());
@@ -58,9 +58,9 @@ public class HallOfFame extends AbstractVerticle {
         hallOfFame.remove(event.getId());
     }
 
-    private void updateHallOfFameForLooser(Message<String> tMessage) {
-        BruteLooseFight event = Json.decodeValue(tMessage.body(), BruteLooseFight.class);
-        hallOfFame.compute(event.getId(), (s, row) -> row.notifyLoose());
+    private void updateHallOfFameForLoser(Message<String> tMessage) {
+        BruteLoseFight event = Json.decodeValue(tMessage.body(), BruteLoseFight.class);
+        hallOfFame.compute(event.getId(), (s, row) -> row.notifyLose());
     }
 
     private void updateHallOfFameForWinner(Message<String> tMessage) {
@@ -97,7 +97,7 @@ public class HallOfFame extends AbstractVerticle {
             return new BruteRow(id, xp + 2, fightCount + 1);
         }
 
-        BruteRow notifyLoose() {
+        BruteRow notifyLose() {
             return new BruteRow(id, xp + 1, fightCount + 1);
         }
 

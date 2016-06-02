@@ -3,7 +3,7 @@ package com.vsct.quicky.vertx.labrute.commands;
 import com.google.common.collect.ImmutableList;
 import com.vsct.quicky.vertx.labrute.Main;
 import com.vsct.quicky.vertx.labrute.aggregate.Brute;
-import com.vsct.quicky.vertx.labrute.events.BruteLooseFight;
+import com.vsct.quicky.vertx.labrute.events.BruteLoseFight;
 import com.vsct.quicky.vertx.labrute.events.BruteWinFight;
 import com.vsct.quicky.vertx.labrute.eventstore.BruteCommand;
 import com.vsct.quicky.vertx.labrute.fwk.Event;
@@ -36,9 +36,9 @@ public class Fight extends BruteCommand {
         // file un random: 1 chance sur 2 de gagner
         Main.vertx.setTimer(random.nextInt(500) + 500, h -> {
             if (random.nextBoolean()) {
-                handler.handle(ImmutableList.of(new BruteWinFight(brute.getId()), new BruteLooseFight(opponentId)));
+                handler.handle(ImmutableList.of(new BruteWinFight(brute.getId()), new BruteLoseFight(opponentId)));
             } else {
-                handler.handle(ImmutableList.of(new BruteLooseFight(brute.getId()), new BruteWinFight(opponentId)));
+                handler.handle(ImmutableList.of(new BruteLoseFight(brute.getId()), new BruteWinFight(opponentId)));
             }
         });
     }

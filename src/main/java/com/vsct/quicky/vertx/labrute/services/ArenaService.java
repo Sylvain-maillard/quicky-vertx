@@ -19,22 +19,10 @@ public class ArenaService extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         vertx.eventBus().consumer(BruteWinFight.class.getName(), this::selectNextFight);
-        vertx.eventBus().consumer(BruteLooseFight.class.getName(), this::selectNextFight);
+        vertx.eventBus().consumer(BruteLoseFight.class.getName(), this::selectNextFight);
         vertx.eventBus().consumer(BruteJoined.class.getName(), this::selectNextFight);
         vertx.eventBus().consumer(BruteQuit.class.getName(), this::removeBrute);
-        vertx.eventBus().consumer(OpponentFound.class.getName(), this::startFight);
         vertx.eventBus().consumer(BruteShouldRest.class.getName(), this::removeBrute);
-    }
-
-    private void startFight(Message<String> handler) {
-        OpponentFound event = Json.decodeValue(handler.body(), OpponentFound.class);
-        vertx.eventBus().send("applyEvents", event.getId(), (AsyncResult<Message<String>> bruteRebuilt) -> {
-            if (bruteRebuilt.succeeded()) {
-                String bruteAsJson = bruteRebuilt.result().body();
-                Brute brute = Json.decodeValue(bruteAsJson, Brute.class);
-                brute.fight(event.getOpponentId());
-            }
-        });
     }
 
     private void removeBrute(Message<String> tMessage) {

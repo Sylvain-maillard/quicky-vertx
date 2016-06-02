@@ -28,9 +28,20 @@ public class MyEventStore extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        vertx.eventBus().consumer("events", this::storeEvent);
+        vertx.eventBus().consumer("createNew", this::createNew);
+        vertx.eventBus().consumer("saveEvents", this::saveEvent);
         vertx.eventBus().consumer("applyEvents", this::applyEvents);
         vertx.eventBus().consumer("listEvents", this::listEvents);
+    }
+
+    private void createNew(Message<String> tMessage) {
+        String newId = tMessage.body();
+        if (store.containsKey(newId)) {
+            tMessage.fail(-1, "allready present in store.");
+        } else {
+            store.put(newId, new ArrayList<>());
+            tMessage.reply("");
+        }
     }
 
     private void listEvents(Message<String> tMessage) {
@@ -48,7 +59,7 @@ public class MyEventStore extends AbstractVerticle {
         return array;
     }
 
-    private void storeEvent(Message<String> handler) {
+    private void saveEvent(Message<String> handler) {
         Event event = Json.decodeValue(handler.body(), Event.class);
         String id = event.getId();
         // get event for brute:

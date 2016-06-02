@@ -15,7 +15,7 @@ public abstract class Aggregate {
     }
 
     public <T extends Aggregate> void processCommand(Command<T> command) {
-        command.execute((T) this, events -> events.forEach(event -> Main.vertx.eventBus().send("events", Json.encodePrettily(event))));
+        command.execute((T) this, events -> events.forEach(event -> Main.vertx.eventBus().send("saveEvents", Json.encodePrettily(event))));
     }
 
 

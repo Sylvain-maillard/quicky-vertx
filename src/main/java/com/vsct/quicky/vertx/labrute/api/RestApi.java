@@ -53,10 +53,13 @@ public class RestApi extends AbstractVerticle {
     private void handleNew(RoutingContext routingContext) {
         // create new brute:
         String bruteId = routingContext.request().getParam("bruteId");
-        Brute brute = new Brute();
-        brute.setId(bruteId);
-        brute.processCommand(new JoinArena());
-        routingContext.response().setStatusCode(HttpResponseStatus.CREATED.code()).end();
+        vertx.eventBus().send("createNew", bruteId, result ->  {
+           if (result.failed()) {
+               routingContext.response().setStatusCode(HttpResponseStatus.BAD_REQUEST.code()).end("brute with id " + bruteId + " allready exist");
+           } else {
+               routingContext.response().setStatusCode(HttpResponseStatus.CREATED.code()).end();
+           }
+        });
     }
 
     private void handleQuery(RoutingContext routingContext) {
@@ -78,21 +81,29 @@ public class RestApi extends AbstractVerticle {
         try {
             final Commands commands = Commands.valueOf(command.toUpperCase());
             // build the brute:
-            vertx.eventBus().send("applyEvents", bruteId, (AsyncResult<Message<String>> handler) -> processCommandOnBrute(commands, handler));
-            // respond to client:
-            routingContext.response().setStatusCode(HttpResponseStatus.ACCEPTED.code()).end();
+            vertx.eventBus().send("applyEvents", bruteId, (AsyncResult<Message<String>> handler) -> {
+                if (handler.failed()) {
+                    routingContext.response().setStatusCode(HttpResponseStatus.BAD_REQUEST.code()).end(handler.cause().getMessage());
+                } else {
+                    Brute brute = Json.decodeValue(handler.result().body(), Brute.class);
+                    brute.processCommand(commands.getInstance());
+                    // respond to client:
+                    routingContext.response().setStatusCode(HttpResponseStatus.ACCEPTED.code()).end();
+                }
+            });
         } catch (IllegalArgumentException e) {
             routingContext.response().setStatusCode(HttpResponseStatus.BAD_REQUEST.code()).end(e.getMessage());
         }
 
     }
 
-    private void processCommandOnBrute(Commands command, AsyncResult<Message<String>> handler) {
-        Brute brute = Json.decodeValue(handler.result().body(), Brute.class);
-        brute.processCommand(command.getInstance());
-    }
-
     enum Commands {
+        JOINARENA {
+            @Override
+            public BruteCommand getInstance() {
+                return new JoinArena();
+            }
+        },
         QUITARENA {
             @Override
             public BruteCommand getInstance() {
