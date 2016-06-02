@@ -5,6 +5,8 @@ import com.vsct.quicky.vertx.aggregate.Brute;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -27,6 +29,22 @@ public class BruteEventStore extends AbstractVerticle {
     public void start() throws Exception {
         vertx.eventBus().consumer("events", this::storeEvent);
         vertx.eventBus().consumer("applyEvents", this::applyEvents);
+        vertx.eventBus().consumer("listEvents", this::listEvents);
+    }
+
+    private void listEvents(Message<String> tMessage) {
+        String bruteId = tMessage.body();
+        if (!store.containsKey(bruteId)){
+            tMessage.fail(-1,bruteId + " could not be found");
+        } else {
+            tMessage.reply(Json.encode(toJsonArray(getPastEvents(bruteId))));
+        }
+    }
+
+    private JsonArray toJsonArray(List<BruteEvent> pastEvents) {
+        JsonArray array = new JsonArray();
+        pastEvents.forEach(event -> array.add(new JsonObject().put("type", event.getClass().getSimpleName()).put("date", event.getTime().toString())));
+        return array;
     }
 
     private void storeEvent(Message<String> handler) {
@@ -43,8 +61,14 @@ public class BruteEventStore extends AbstractVerticle {
 
     private void applyEvents(Message<String> tMessage) {
         Brute brute = new Brute();
-        brute.applyEvents(getPastEvents(tMessage.body()));
-        tMessage.reply(Json.encode(brute));
+        String bruteId = tMessage.body();
+        brute.setId(bruteId);
+        if (!store.containsKey(bruteId)){
+            tMessage.fail(-1,bruteId + " could not be found");
+        } else {
+            brute.applyEvents(getPastEvents(bruteId));
+            tMessage.reply(Json.encode(brute));
+        }
     }
 
     private List<BruteEvent> getPastEvents(String bruteId) {

@@ -1,6 +1,9 @@
 package com.vsct.quicky.vertx.eventstore;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.MoreObjects;
 import com.vsct.quicky.vertx.aggregate.Brute;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,6 +30,9 @@ public abstract class BruteEvent {
     public Date getTime() {
         return time;
     }
+
+    @JsonIgnore
+    public String getType() { return this.getClass().getSimpleName(); }
 
     public abstract void apply(Brute brute);
 

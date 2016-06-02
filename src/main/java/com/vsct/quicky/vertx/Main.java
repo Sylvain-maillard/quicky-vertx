@@ -2,12 +2,13 @@ package com.vsct.quicky.vertx;
 
 
 import com.vsct.quicky.vertx.aggregate.Brute;
+import com.vsct.quicky.vertx.api.RestApi;
 import com.vsct.quicky.vertx.commands.JoinArena;
 import com.vsct.quicky.vertx.commands.QuitArena;
 import com.vsct.quicky.vertx.eventhandler.Arena;
-import com.vsct.quicky.vertx.eventhandler.ArenaEmptyEvent;
 import com.vsct.quicky.vertx.eventstore.BruteEventStore;
 import com.vsct.quicky.vertx.projections.HallOfFame;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
 
@@ -29,6 +30,7 @@ public class Main {
         vertx.deployVerticle(BruteEventStore.class.getName());
         HallOfFame hallOfFame = new HallOfFame();
         vertx.deployVerticle(hallOfFame);
+        vertx.deployVerticle(RestApi.class.getName(), new DeploymentOptions().setInstances(8));
 
         // creer une nouvelle brute:
         Brute brute = new Brute().setId("Axel");

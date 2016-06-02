@@ -50,7 +50,7 @@ public class HallOfFame extends AbstractVerticle {
                                 "</body></html>");
                     }
                 })
-                .listen(8080);
+                .listen(9080);
     }
 
     private void removeBrute(Message<String> tMessage) {
