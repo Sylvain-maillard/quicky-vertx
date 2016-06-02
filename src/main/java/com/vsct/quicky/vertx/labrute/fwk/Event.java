@@ -1,11 +1,9 @@
-package com.vsct.quicky.vertx.eventstore;
+package com.vsct.quicky.vertx.labrute.fwk;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.MoreObjects;
-import com.vsct.quicky.vertx.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.fwk.Aggregate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Date;
@@ -14,12 +12,13 @@ import java.util.Date;
  * Created by Sylvain on 29/05/2016.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
-public abstract class BruteEvent {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public abstract class Event<T extends Aggregate> {
 
     protected final String id;
     private final Date time = new Date();
 
-    public BruteEvent(String id) {
+    public Event(String id) {
         this.id = id;
     }
 
@@ -31,10 +30,10 @@ public abstract class BruteEvent {
         return time;
     }
 
-    @JsonIgnore
+    @JsonProperty
     public String getType() { return this.getClass().getSimpleName(); }
 
-    public abstract void apply(Brute brute);
+    public abstract void apply(T brute);
 
     @Override
     public String toString() {

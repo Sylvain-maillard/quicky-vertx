@@ -1,13 +1,13 @@
-package com.vsct.quicky.vertx;
+package com.vsct.quicky.vertx.labrute;
 
 
-import com.vsct.quicky.vertx.aggregate.Brute;
-import com.vsct.quicky.vertx.api.RestApi;
-import com.vsct.quicky.vertx.commands.JoinArena;
-import com.vsct.quicky.vertx.commands.QuitArena;
-import com.vsct.quicky.vertx.eventhandler.Arena;
-import com.vsct.quicky.vertx.eventstore.BruteEventStore;
-import com.vsct.quicky.vertx.projections.HallOfFame;
+import com.vsct.quicky.vertx.labrute.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.api.RestApi;
+import com.vsct.quicky.vertx.labrute.commands.JoinArena;
+import com.vsct.quicky.vertx.labrute.commands.QuitArena;
+import com.vsct.quicky.vertx.labrute.eventstore.MyEventStore;
+import com.vsct.quicky.vertx.labrute.views.HallOfFame;
+import com.vsct.quicky.vertx.labrute.services.ArenaService;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import org.slf4j.Logger;
@@ -26,8 +26,8 @@ public class Main {
     public static Vertx vertx = Vertx.vertx();
 
     public static void main(String[] args) throws IOException {
-        vertx.deployVerticle(Arena.class.getName());
-        vertx.deployVerticle(BruteEventStore.class.getName());
+        vertx.deployVerticle(ArenaService.class.getName());
+        vertx.deployVerticle(MyEventStore.class.getName());
         HallOfFame hallOfFame = new HallOfFame();
         vertx.deployVerticle(hallOfFame);
         vertx.deployVerticle(RestApi.class.getName(), new DeploymentOptions().setInstances(8));

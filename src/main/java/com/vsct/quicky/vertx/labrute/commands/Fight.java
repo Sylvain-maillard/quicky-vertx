@@ -1,12 +1,12 @@
-package com.vsct.quicky.vertx.commands;
+package com.vsct.quicky.vertx.labrute.commands;
 
 import com.google.common.collect.ImmutableList;
-import com.vsct.quicky.vertx.Main;
-import com.vsct.quicky.vertx.aggregate.Brute;
-import com.vsct.quicky.vertx.events.BruteLooseFight;
-import com.vsct.quicky.vertx.events.BruteWinFight;
-import com.vsct.quicky.vertx.eventstore.BruteCommand;
-import com.vsct.quicky.vertx.eventstore.BruteEvent;
+import com.vsct.quicky.vertx.labrute.Main;
+import com.vsct.quicky.vertx.labrute.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.events.BruteLooseFight;
+import com.vsct.quicky.vertx.labrute.events.BruteWinFight;
+import com.vsct.quicky.vertx.labrute.eventstore.BruteCommand;
+import com.vsct.quicky.vertx.labrute.fwk.Event;
 import io.vertx.core.Handler;
 import org.slf4j.Logger;
 
@@ -31,7 +31,7 @@ public class Fight extends BruteCommand {
     }
 
     @Override
-    public void execute(Brute brute, Handler<List<BruteEvent>> handler) {
+    public void execute(Brute brute, Handler<List<Event>> handler) {
         LOGGER.debug(brute.getId() + " will fight against " + opponentId);
         // file un random: 1 chance sur 2 de gagner
         Main.vertx.setTimer(random.nextInt(500) + 500, h -> {

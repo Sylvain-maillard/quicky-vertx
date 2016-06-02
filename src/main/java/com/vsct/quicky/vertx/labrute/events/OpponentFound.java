@@ -1,12 +1,9 @@
-package com.vsct.quicky.vertx.events;
+package com.vsct.quicky.vertx.labrute.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.MoreObjects;
-import com.vsct.quicky.vertx.aggregate.Brute;
-import com.vsct.quicky.vertx.eventstore.BruteEvent;
+import com.vsct.quicky.vertx.labrute.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.eventstore.BruteEvent;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import java.util.Objects;
 
 /**
  * Created by Sylvain on 30/05/2016.

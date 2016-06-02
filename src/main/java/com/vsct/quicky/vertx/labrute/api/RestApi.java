@@ -1,9 +1,9 @@
-package com.vsct.quicky.vertx.api;
+package com.vsct.quicky.vertx.labrute.api;
 
-import com.vsct.quicky.vertx.aggregate.Brute;
-import com.vsct.quicky.vertx.commands.JoinArena;
-import com.vsct.quicky.vertx.commands.QuitArena;
-import com.vsct.quicky.vertx.eventstore.BruteCommand;
+import com.vsct.quicky.vertx.labrute.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.commands.JoinArena;
+import com.vsct.quicky.vertx.labrute.commands.QuitArena;
+import com.vsct.quicky.vertx.labrute.eventstore.BruteCommand;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -43,7 +43,6 @@ public class RestApi extends AbstractVerticle {
         vertx.eventBus().send("listEvents", bruteId, (AsyncResult<Message<String>> handler) -> {
             if (handler.succeeded()) {
                 String body = handler.result().body();
-                LOGGER.debug(body);
                 routingContext.response().putHeader("Content-Type","application/json").end(body);
             } else {
                 routingContext.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end(handler.cause().getMessage());

@@ -1,10 +1,10 @@
-package com.vsct.quicky.vertx.projections;
+package com.vsct.quicky.vertx.labrute.views;
 
-import com.vsct.quicky.vertx.events.BruteJoined;
-import com.vsct.quicky.vertx.events.BruteLooseFight;
-import com.vsct.quicky.vertx.events.BruteQuit;
-import com.vsct.quicky.vertx.events.BruteWinFight;
-import com.vsct.quicky.vertx.eventstore.BruteEvent;
+import com.vsct.quicky.vertx.labrute.events.BruteJoined;
+import com.vsct.quicky.vertx.labrute.events.BruteLooseFight;
+import com.vsct.quicky.vertx.labrute.events.BruteQuit;
+import com.vsct.quicky.vertx.labrute.events.BruteWinFight;
+import com.vsct.quicky.vertx.labrute.fwk.Event;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
@@ -27,8 +27,8 @@ public class HallOfFame extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        vertx.eventBus().consumer(BruteQuit.class.getName(), this::removeBrute);
-        vertx.eventBus().consumer(BruteJoined.class.getName(), this::initBrute);
+        vertx.eventBus().consumer(BruteQuit.class.getName(), this::bruteQuit);
+        vertx.eventBus().consumer(BruteJoined.class.getName(), this::bruteJoined);
         vertx.eventBus().consumer(BruteWinFight.class.getName(), this::updateHallOfFameForWinner);
         vertx.eventBus().consumer(BruteLooseFight.class.getName(), this::updateHallOfFameForLooser);
         vertx.createHttpServer()
@@ -53,8 +53,8 @@ public class HallOfFame extends AbstractVerticle {
                 .listen(9080);
     }
 
-    private void removeBrute(Message<String> tMessage) {
-        BruteEvent event = Json.decodeValue(tMessage.body(), BruteEvent.class);
+    private void bruteQuit(Message<String> tMessage) {
+        Event event = Json.decodeValue(tMessage.body(), Event.class);
         hallOfFame.remove(event.getId());
     }
 
@@ -68,8 +68,8 @@ public class HallOfFame extends AbstractVerticle {
         hallOfFame.compute(event.getId(), (s, row) -> row.notifyWin());
     }
 
-    private void initBrute(Message<String> tMessage) {
-        BruteEvent event = Json.decodeValue(tMessage.body(), BruteEvent.class);
+    private void bruteJoined(Message<String> tMessage) {
+        Event event = Json.decodeValue(tMessage.body(), Event.class);
         hallOfFame.put(event.getId(), new BruteRow(event.getId(), 0, 0));
     }
 

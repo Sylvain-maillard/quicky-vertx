@@ -1,8 +1,8 @@
-package com.vsct.quicky.vertx.events;
+package com.vsct.quicky.vertx.labrute.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.vsct.quicky.vertx.aggregate.Brute;
-import com.vsct.quicky.vertx.eventstore.BruteEvent;
+import com.vsct.quicky.vertx.labrute.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.eventstore.BruteEvent;
 
 /**
  * Created by Sylvain on 29/05/2016.

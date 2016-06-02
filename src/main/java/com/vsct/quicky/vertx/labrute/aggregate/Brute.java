@@ -1,17 +1,15 @@
-package com.vsct.quicky.vertx.aggregate;
+package com.vsct.quicky.vertx.labrute.aggregate;
 
 import com.google.common.base.MoreObjects;
-import com.vsct.quicky.vertx.Main;
-import com.vsct.quicky.vertx.eventstore.BruteCommand;
-import com.vsct.quicky.vertx.eventstore.BruteEvent;
-import io.vertx.core.json.Json;
-
-import java.util.List;
+import com.vsct.quicky.vertx.labrute.commands.Fight;
+import com.vsct.quicky.vertx.labrute.commands.JoinArena;
+import com.vsct.quicky.vertx.labrute.commands.QuitArena;
+import com.vsct.quicky.vertx.labrute.fwk.Aggregate;
 
 /**
  * Created by Sylvain on 29/05/2016.
  */
-public class Brute {
+public class Brute extends Aggregate {
 
     private String id;
     private int xp;
@@ -46,14 +44,6 @@ public class Brute {
     public Brute setFighting(boolean fighting) {
         isFighting = fighting;
         return this;
-    }
-
-    public void applyEvents(List<BruteEvent> events) {
-        events.forEach(event -> event.apply(this));
-    }
-
-    public void processCommand(BruteCommand command) {
-        command.execute(this, events -> events.forEach(event -> Main.vertx.eventBus().send("events", Json.encodePrettily(event))));
     }
 
     public void incFightCount() {
@@ -94,5 +84,17 @@ public class Brute {
                 .add("hasJoined", hasJoined)
                 .add("isFighting", isFighting)
                 .toString();
+    }
+
+    public void fight(String opponentId) {
+        processCommand(new Fight(opponentId));
+    }
+
+    public void join() {
+        processCommand(new JoinArena());
+    }
+
+    public void quit() {
+        processCommand(new QuitArena());
     }
 }

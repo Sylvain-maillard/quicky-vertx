@@ -1,7 +1,8 @@
-package com.vsct.quicky.vertx.eventstore;
+package com.vsct.quicky.vertx.labrute.eventstore;
 
 import com.google.common.collect.ImmutableList;
-import com.vsct.quicky.vertx.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.aggregate.Brute;
+import com.vsct.quicky.vertx.labrute.fwk.Event;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
@@ -19,11 +20,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * Created by Sylvain on 29/05/2016.
  */
-public class BruteEventStore extends AbstractVerticle {
+public class MyEventStore extends AbstractVerticle {
 
-    private static final Logger LOGGER = getLogger(BruteEventStore.class);
+    private static final Logger LOGGER = getLogger(MyEventStore.class);
 
-    private ConcurrentMap<String, List<BruteEvent>> store = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, List<Event>> store = new ConcurrentHashMap<>();
 
     @Override
     public void start() throws Exception {
@@ -41,17 +42,17 @@ public class BruteEventStore extends AbstractVerticle {
         }
     }
 
-    private JsonArray toJsonArray(List<BruteEvent> pastEvents) {
+    private JsonArray toJsonArray(List<Event> pastEvents) {
         JsonArray array = new JsonArray();
         pastEvents.forEach(event -> array.add(new JsonObject().put("type", event.getClass().getSimpleName()).put("date", event.getTime().toString())));
         return array;
     }
 
     private void storeEvent(Message<String> handler) {
-        BruteEvent event = Json.decodeValue(handler.body(), BruteEvent.class);
+        Event event = Json.decodeValue(handler.body(), Event.class);
         String id = event.getId();
         // get event for brute:
-        List<BruteEvent> events = store.getOrDefault(id, new ArrayList<>());
+        List<Event> events = store.getOrDefault(id, new ArrayList<>());
         events.add(event);
         store.put(id, events);
         // publish event
@@ -71,36 +72,7 @@ public class BruteEventStore extends AbstractVerticle {
         }
     }
 
-    private List<BruteEvent> getPastEvents(String bruteId) {
+    private List<Event> getPastEvents(String bruteId) {
         return store.getOrDefault(bruteId, ImmutableList.of());
     }
-
-    public void displayAllBrutes() {
-        StringBuilder sb = new StringBuilder().append("-----------brutes------------");
-        store.entrySet().forEach(bruteEvents -> {
-            sb.append("id: " + bruteEvents.getKey());
-            sb.append("--> events:");
-            bruteEvents.getValue().forEach(sb::append);
-            sb.append("--> brute rebuilded from store:");
-            Brute brute = new Brute();
-            brute.applyEvents(bruteEvents.getValue());
-            sb.append(brute);
-        });
-        LOGGER.info(sb.toString());
-    }
-
-    public void displayAllEventByTime() {
-        StringBuilder sb = new StringBuilder().append("-----------brutes by datetime------------");
-        store.entrySet().forEach(bruteEvents -> {
-            sb.append("id: " + bruteEvents.getKey());
-            sb.append("--> events:");
-            bruteEvents.getValue().stream().sorted((o1, o2) -> o1.getTime().compareTo(o2.getTime())).forEach(sb::append);
-            sb.append("--> brute rebuilded from store:");
-            Brute brute = new Brute();
-            brute.applyEvents(bruteEvents.getValue());
-            sb.append(brute);
-        });
-        LOGGER.info(sb.toString());
-    }
-
 }
