@@ -27,23 +27,19 @@ public class Main {
         vertx.deployVerticle(RestApi.class.getName(), new DeploymentOptions().setInstances(8));
 
         // creer une nouvelle brute:
-        Brute brute = new Brute().setId("ChuckNorris");
-        brute.join();
+        Brute chuckNorris = new Brute().setId("ChuckNorris");
+        chuckNorris.join();
         // creer une nouvelle brute:
-        Brute brute2 = new Brute().setId("FifiBrindacier");
-        brute2.join();
+        Brute fifiBrindacier = new Brute().setId("FifiBrindacier");
+        fifiBrindacier.join();
 
         System.in.read();
 
         // virer une brute:
-        brute2.quit();
+        fifiBrindacier.quit();
 
-        // creer des nouvelles brutes:
-        Brute brute3 = new Brute().setId("brute3");
-        brute3.join();
-        Brute brute4 = new Brute().setId("brute4");
-        brute4.join();
-        for (int i = 5; i < 1000; i++) {
+        // creer des tas de brutes:
+        for (int i = 3; i < 1000; i++) {
             int finalI = i;
             vertx.runOnContext(h -> {
                 new Brute().setId("brute" + finalI).join();
