@@ -12,9 +12,6 @@ import io.vertx.core.Vertx;
 
 import java.io.IOException;
 
-/**
- * Created by Sylvain on 26/05/2016.
- */
 public class Main {
 
     public static Vertx vertx = Vertx.vertx();
