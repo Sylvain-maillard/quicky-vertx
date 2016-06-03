@@ -34,7 +34,7 @@ public class HallOfFame extends AbstractVerticle {
         vertx.createHttpServer()
                 .requestHandler(h ->  {
                     LOGGER.info("got query {}", h.uri());
-                    if (h.uri().equals("/hallOfFame")) {
+                    if (h.uri().equalsIgnoreCase("/hallOfFame")) {
 
                         StringBuilder sb = new StringBuilder();
                         hallOfFame.entrySet()

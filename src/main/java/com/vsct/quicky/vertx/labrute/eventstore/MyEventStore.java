@@ -49,7 +49,7 @@ public class MyEventStore extends AbstractVerticle {
         if (!store.containsKey(bruteId)){
             tMessage.fail(-1,bruteId + " could not be found");
         } else {
-            tMessage.reply(Json.encode(toJsonArray(getPastEvents(bruteId))));
+            tMessage.reply(Json.encode(getPastEvents(bruteId)));
         }
     }
 
