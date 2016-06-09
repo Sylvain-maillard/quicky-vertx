@@ -14,6 +14,13 @@ public class B_HttpClientExemple {
 
         vertx.createHttpClient().get(80, "www.google.com", "/").handler(h -> {
             LOGGER.debug("got response: " + h.statusMessage());
+// ceci bloque l'event loop et déclenche des stacktraces...
+//            try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
             h.bodyHandler(bodyHandler -> {
                 LOGGER.debug(bodyHandler.toString());
             });

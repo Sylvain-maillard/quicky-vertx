@@ -6,8 +6,6 @@ import com.vsct.quicky.vertx.labrute.fwk.Event;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -51,12 +49,6 @@ public class MyEventStore extends AbstractVerticle {
         } else {
             tMessage.reply(Json.encode(getPastEvents(bruteId)));
         }
-    }
-
-    private JsonArray toJsonArray(List<Event> pastEvents) {
-        JsonArray array = new JsonArray();
-        pastEvents.forEach(event -> array.add(new JsonObject().put("type", event.getClass().getSimpleName()).put("date", event.getTime().toString())));
-        return array;
     }
 
     private void saveEvent(Message<String> handler) {
