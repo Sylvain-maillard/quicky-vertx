@@ -4,7 +4,7 @@ En préparation du quicky sur vert.x
 
 Idée: faire un jeu type "la brute"
 
- ## Event-sourcing
+## Event-sourcing
 
  Les events:
  * Une brute a rejoint l'arêne
@@ -22,7 +22,7 @@ Idée: faire un jeu type "la brute"
  Les aggregats:
  * Brute
 
- ## Concepts
+## Concepts
 
 - processCommand:
     - Commande -> Event(s)
@@ -46,12 +46,3 @@ Il s'agit d'éléments logiciel qui sont des vues sur le modèle. Ces vues sont 
 transmis via l'eventbus par l'event store.
 
 * ex: récupérer le hall of fame.
-
-# RAF
-
-- présenter les concepts vertx eventbus et verticles (très important avant de présenter le jeu)
-- présenter le jeu
-- présenter et coder un webservice REST pour exposer les commandes du jeu
-- présenter et coder une vue avec un moteur de template (à voir si on a le tps)
-- présenter et coder l'event store dans une base de données.
-- présenter et coder un cluster vertx ? (pas nécessaire car on l'utilise pas chez VSC)
